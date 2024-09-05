@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Dispatch Records</title>
+    <style>
+        body {
+            background-color: #d5d8dba8;
+        }
+        #recordsTable {
+            width: 100%;
+            top: 0;
+        }
+        .container {
+            width: 75%;
+            height: 70%;
+            position: absolute;
+            margin: 0 auto;
+            left: 4%;
+            top: 0;
+        }
+        /* Tab styles */
+        .tab-menu {
+            display: flex;
+            justify-content: center;
+            background-color: white;
+            width: 100%;
+            height: 6vh;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin-bottom: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.02), /* Bottom shadow */
+                0px -4px 6px rgba(0, 0, 0, 0.02), /* Top shadow */
+                4px 0px 6px rgba(0, 0, 0, 0.02), /* Right shadow */
+                -4px 0px 6px rgba(0, 0, 0, 0.02); /* Left shadow */
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+        }
+        .tab {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            width: 10%;
+            text-align: center;
+        }
+        .tab.active {
+            background-color: #d3d3d3;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            width: 20%;
+        }
+        .center-container {
+            margin-top: 6vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .selected {
+            background-color: #d3d3d3 !important; /* Light grey */
+        }
+
+        .modal-content-weights{
+            background-color: #fefefe;
+            border: 1px solid #888;
+            width: 70%; 
+            position: relative; /* Enable positioning for child elements */
+            z-index: 1060;
+            height: 90%;
+            border-radius: 10px;
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; 
+            z-index: 1050; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 70%; 
+            position: relative; /* Enable positioning for child elements */
+            z-index: 1060;
+        }
+
+        .modal-content-sales-info{
+            background-color: #fefefe;
+            border: 1px solid #888;
+            width: 30%; 
+            position: relative; /* Enable positioning for child elements */
+            z-index: 1060;
+            border-radius: 10px;
+
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #446fa8;
+            width: 100%;
+            height: 4vh;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            
+        }
+
+        .modal-header h2{
+            position: absolute;
+
+            font-family: 'Roboto', sans-serif;
+            left: 35.5%;
+            font-size: 2vh;
+            color: white;
+        }
+
+        .modal-header span{
+            position: absolute;
+            color: red;
+            right: 5%;
+        }
+
+        
+        .input-container1 {
+            margin-top: 7vh;
+            margin-left: 2.5vh;
+            width: 93%;
+            height: 47vh;
+            border-radius: 10px;
+            overflow-y: auto;
+            background-color: rgb(250, 250, 250);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.04) inset, /* Bottom shadow */
+                0px -4px 6px rgba(0, 0, 0, 0.04) inset, /* Top shadow */
+                4px 0px 6px rgba(0, 0, 0, 0.04) inset, /* Right shadow */
+                -4px 0px 6px rgba(0, 0, 0, 0.04) inset; /* Left shadow */
+            padding: 2vh;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .input-container1 input{
+            font-size: 1.8vh;
+            text-align: center;
+        }
+
+        .input-container1 label{
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            
+        }
+        
+        .input-container {
+            margin-bottom: 0px;
+            color: rgb(87, 86, 86);
+            font-family: 'Roboto', sans-serif;
+            font-size: 2vh;
+            font-weight: 500;
+            width: 30%;
+            display: flex;
+            flex-direction: row;
+            margin-left: 19px;
+            
+            
+        }
+
+        .input-container2 {
+            margin-top: 9vh;
+            margin-bottom: 30px;
+            margin-left: 1vw;
+            color: rgb(87, 86, 86);
+            font-family: 'Roboto', sans-serif;
+            font-size: 2vh;
+            font-weight: 500;
+            width: 20%;
+        }
+
+        .input-container input[type="checkbox"] {
+    margin-bottom: 7px; /* Add left margin to space the checkbox from the label */
+    margin-left: 20px;
+    font-size: 2vh;
+    transform: scale(1.5);
+}
+
+        .input-container2 input{
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 2vh;
+            width: 35%;
+            background-color: transparent;
+            font-weight: 600;
+            color: rgb(238, 126, 126);
+            border: none;
+        }
+
+      
+     
+
+       
+    
+        .input-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .row-data-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .row-data-container label {
+            flex: 1;
+        }
+        .row-data-container input {
+            flex: 2;
+            margin-right: 10px;
+            background-color: transparent;
+            bordeR: none;
+        }
+        .row-data-container .delete-row {
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .button-container button {
+            font-family: 'Roboto', sans-serif;
+            font-size: 2vh;
+            text-align: left;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 2vh;
+        }
+        .button-container button:hover {
+            color: rgb(100, 194, 100);
+        }
+        .button-container button i {
+            color: rgb(76, 119, 238);
+        }
+        .action-buttons {
+            display: flex;
+            width: 70%;
+            flex-direction: column;
+            margin-left: 2.6vw;
+            margin-top: 2vh;
+        }
+        #weightsButton i {
+            margin-right: 0.8vw;
+        }
+        #markAsPackedButton i {
+            margin-right: 0.87vw;
+        }
+        .sidemenu {
+            background-color: rgb(255, 255, 255);
+            position: absolute;
+            height: 65vh;
+            width: 15vw;
+            right: 4%;
+            top: 6%;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.02), /* Bottom shadow */
+                0px -4px 6px rgba(0, 0, 0, 0.02), /* Top shadow */
+                4px 0px 6px rgba(0, 0, 0, 0.02), /* Right shadow */
+                -4px 0px 6px rgba(0, 0, 0, 0.02); /* Left shadow */
+        }
+        .tablecontainer {
+            width: 100%;
+            height: 80vh;
+            overflow-y: auto;
+            background-color: white;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.02), /* Bottom shadow */
+                0px -4px 6px rgba(0, 0, 0, 0.02), /* Top shadow */
+                4px 0px 6px rgba(0, 0, 0, 0.02), /* Left shadow */;
+            font-family: 'Roboto', sans-serif;
+        }
+        /* Make table header sticky */
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #446fa8; /* Background color to prevent text overlap */
+            z-index: 100; /* Ensure it stays above other content */
+            color: rgb(255, 255, 255);
+            border: none;
+        }
+        /* Background color styles for row data */
+        .green-bg {
+            background-color: #d4edda; /* Light green */
+        }
+        .yellow-bg {
+            background-color: #fff3cd; /* Light yellow */
+        }
+        .red-bg {
+            background-color: #f8d7da; /* Light red */
+        }
+        /* Disable button style */
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .box-data-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            text-align: center;
+            justify-content: center;
+            background-color: #398ae688;
+            
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05), /* Bottom shadow */
+                0px -4px 6px rgba(0, 0, 0, 0.05), /* Top shadow */
+                4px 0px 6px rgba(0, 0, 0, 0.05), /* Right shadow */
+                -4px 0px 6px rgba(0, 0, 0, 0.05); /* Left shadow */
+            position: relative; /* Ensure the red cross is positioned correctly */
+            
+        }
+
+
+        .box-data-container label {
+            margin-bottom: 10px;
+        }
+        .remove-box {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: red;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        /* Container for shipping boxes */
+        .boxes-container {
+            position: absolute; /* Position within modal */
+            top: 10%; /* Adjust from top of modal */
+            right: 2.1%; /* Adjust from right of modal */
+            width: 16vw; /* Set width of the container */
+            height: 15vh; /* Set max height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 10px; /* Padding inside the container */
+            background-color: #fefefe; /* Background color */
+            border: solid 4px #446fa8;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.03) inset, /* Bottom shadow */
+                0px -4px 6px rgba(0, 0, 0, 0.03) inset, /* Top shadow */
+                4px 0px 6px rgba(0, 0, 0, 0.03) inset, /* Right shadow */
+                -4px 0px 6px rgba(0, 0, 0, 0.03) inset; /* Left shadow */
+        }
+        .boxes-container::-webkit-scrollbar {
+            display: none;
+        }
+        .boxes-container input {
+            text-align: center;
+            width: 80%;
+            display: block;
+            margin: 0 auto;
+            background-color: transparent;
+            border: none;
+            border-bottom: solid 1px rgba(128, 128, 128, 0.274);
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.6vh;
+            font-weight:600;
+        }
+        #AddShipping-ID {
+            position: absolute;
+            top: 12%;
+            right: 28%;
+            font-family: 'Roboto', sans-serif;
+            font-size: 2vh;
+            color: grey;
+            font-weight: 500;
+            bordeR: none;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        #AddShipping-ID i{
+            margin-right: 7px;
+            color: rgb(110, 197, 110);
+        }
+        /* Duplicate rows modal styling */
+        #duplicateRowsContainer {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .SideSepLine {
+            top: 45%;
+            width: 100%;
+            height: 3.8vh;
+            margin-top: 1vh;
+            background-color: #446fa8;
+            font-size: 1vh;
+            text-align: center;
+            display: flex;
+            align-items: center; /* Vertically centers the child elements */
+            justify-content: center;
+        }
+        .SideSepLine h1 {
+            top: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: rgb(240, 240, 240);
+            margin-top: 25px;
+        }
+        #ConsolidationSuppliers {
+            margin-top: 3vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Vertically centers the child elements */
+            justify-content: center;
+            text-align: left;
+        }
+        #ConsolidationSuppliers button {
+            width: 10.5vw;
+            font-size: 1.9vh;
+            display: flex;
+            justify-content: left; /* Horizontally centers the text */
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        #ConsolidationSuppliers button i {
+            margin-right: 10px;
+            color: rgb(252, 180, 86);
+            font-size: 2.8vh;
+        }
+        .ConsolActions {
+            margin-top: 30px;
+            width: 100%;
+            height: 40%;
+            background-color: #446fa850;
+            padding-top: 1vh;
+            padding-bottom: 0.2vh;
+        }
+        .ConsolActions button {
+            font-size: 1.5vh;
+            width: 100%;
+            display: flex;
+            justify-content: center; /* Horizontally centers the text */
+            align-items: center;
+            border: solid 1px white;
+            text-align: center;
+            font-size: 1.7vh;
+        }
+        /* Consolidation Modal Specific Styles */
+        #consolidationModal .modal-content {
+            width: 50%; 
+            max-width: 400px; 
+            text-align: center;
+            z-index: 1060;
+        }
+        #consolidationModal label {
+            display: block;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        #consolidationModal input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .flex-container {
+        display: flex;
+        align-items: center; /* Center vertically */
+        justify-content: center; /* Center horizontally */
+    }
+
+    .flex-container i {
+        font-size: 1.2em; /* Increase this value to enlarge the icon */
+        color: rgb(32, 115, 170);
+    }
+
+    .center-text {
+        margin-left: 8px; /* Add some space between icon and text */
+        text-align: center; /* Center text within its span */
+    }
+
+    td {
+        vertical-align: middle; /* Ensure cells align items to the middle */
+        text-align: center; /* Center text in the table cell */
+    }
+
+    /* Active button styles */
+    #ConsolidationSuppliers button.active {
+        background-color: #007bffce; /* Active background color */
+        color: white; /* Active text color */
+        width: 100%;
+    }
+
+    .WeightsHeader{
+        position: absolute;
+        width: 100%;
+        height: 7%;
+        background-color: #446FA8;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        color: white;
+        display: flex; /* Enable flexbox for alignment */
+    align-items: center; /* Vertically center the header */
+    justify-content: center; /* Horizontally center the header (optional, if you want it centered horizontally as well) */
+    }
+
+    .WeightsHeader h1{
+        text-align: center;
+        font-family: 'Roboto', sans-serif;
+        font-size: 2.8vh;
+
+    }
+
+    .BottomButtons{
+        position: absolute;
+        left: 2%;
+        bottom: 3%;
+       
+        
+    }
+
+    #Bottom1{
+        width: 7vw;
+        height: 4vh;
+        background-color: rgb(112, 206, 112);
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 500;
+        font-size: 1.6vh;
+        border-radius: 5px;
+        bordeR: none;
+        CURSOR: POINTER;
+    }
+
+    #Bottom2{
+        width: 10vw;
+        height: 4vh;
+        background-color: #b3b3b3;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 500;
+        font-size: 1.6vh;
+        border-radius: 5px;
+        bordeR: none;
+        CURSOR: POINTER;
+
+    }
+
+    .close-button1{
+        position: absolute;
+        right: 3%;
+        color: red;
+        font-size: 4vh;
+        border: none;
+        background-color: transparent;
+    }
+
+    /* Dispatch Confirmation Modal Styling */
+#dispatchModal .modal-content {
+    width: 50%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #fefefe;
+    border: 1px solid #888;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#dispatchModal .modal-body {
+    margin: 20px 0;
+}
+
+#dispatchModal .modal-body label {
+    display: block;
+    margin-top: 10px;
+    text-align: left;
+}
+
+#dispatchModal .modal-body input {
+    width: calc(100% - 20px);
+    margin-top: 5px;
+    padding: 8px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+#dispatchModal .modal-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#dispatchModal .modal-footer button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#dispatchModal .modal-footer button:hover {
+    background-color: #0056b3;
+}
+
+.toggle-arrow {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+
+
+    </style>
+    <!-- Include Firebase Library -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="center-container">
+            <!-- Tab Menu -->
+            <div class="tab-menu">
+                <div class="tab" onclick="switchTab('Awaiting Packing')">Awaiting Packing</div>
+                <div class="tab" onclick="switchTab('Packed')">Packed</div>
+                <div class="tab" onclick="switchTab('Due to Dispatch')">Due to Dispatch</div>
+                <div class="tab" onclick="switchTab('Dispatched')">Dispatched</div>
+                <div class="tab" onclick="switchTab('Consolidation Dispatched')">[C] Dispatched</div>
+            </div>
+            <div class="tablecontainer">
+                <table id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>Sales Order</th>
+                            <th>Customer</th>
+                            <th>Date Packed</th>
+                            <th>Date Dispatched</th>
+                            <th>Document</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Records will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>      
+        </div>
+    </div>
+
+    <!-- Duplicate Rows Modal Structure -->
+    <div id="duplicateRecordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Rows to Duplicate</h2>
+                <span class="close" onclick="closeModal('duplicateRecordModal')">&times;</span>
+            </div>
+            <div id="duplicateRowsContainer">
+                <!-- Row selection checkboxes will be dynamically added here -->
+            </div>
+            <button onclick="duplicateSelectedRows()">Finalise Duplicate</button>
+        </div>
+    </div>
+
+    <!-- Consolidation Assignment Modal -->
+    <div id="consolidationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Consolidation Type</h2>
+                <span class="close" onclick="closeModal('consolidationModal')">&times;</span>
+            </div>
+            <div id="consolidationOptionsContainer">
+                <label>
+                    <input type="radio" name="consolidationType" value="Emhart Swiss"> Emhart Swiss
+                </label>
+                <label>
+                    <input type="radio" name="consolidationType" value="Emhart Sweden"> Emhart Sweden
+                </label>
+                <label>
+                    <input type="radio" name="consolidationType" value="Glamoro"> Glamoro
+                </label>
+                <label>
+                    <input type="radio" name="consolidationType" value="Rondot France"> Rondot France
+                </label>
+                <label>
+                    <input type="radio" name="consolidationType" value="Rondot Spain"> Rondot Spain
+                </label>
+            </div>
+            <button onclick="finalizeConsolidation()">Finalise Consolidation</button>
+        </div>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="sidemenu">
+        <div class="button-container">
+            <div class="action-buttons">
+                <button id="weightsButton" onclick="openWeightsModal()"><i class="fa-solid fa-pen-to-square"></i>Edit Record</button>
+                <button id="markAsPackedButton" onclick="markAsPacked()" class="disabled"><i class="fa-solid fa-box"></i>Mark as Packed</button> <!-- Always visible, initially disabled -->
+            </div>
+            <div class="SideSepLine">
+                <h1>Consolidations</h1>
+            </div>
+
+            <div id="ConsolidationSuppliers">
+                <button id="EmhartSwedenSupplier"><i class="fa-brands fa-dropbox"></i>Emhart Sweden</button>
+                <button id="EmhartSwissSupplier"><i class="fa-brands fa-dropbox"></i>Emhart Swiss</button>
+                <button id="GlamoroSupplier"><i class="fa-brands fa-dropbox"></i>Glamoro</button>
+                <button id="RondotFranceSupplier"><i class="fa-brands fa-dropbox"></i>Rondot France</button>
+                <button id="RondotSpainSupplier"><i class="fa-brands fa-dropbox"></i>Rondot Spain</button>
+            </div>
+            <div class="ConsolActions">
+                <button id="AssignConsol" onclick="openConsolidationModal()">Assign to Consolidation</button>
+                <button id="RemoveConsol" onclick="removeConsolidation()">Remove from Consolidation</button>
+                <button id="DispatchConsol" onclick="dispatchConsolidation()">Dispatch Consolidation</button>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+<div id="viewDetailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Sales Order Details</h2>
+            <span class="close" onclick="closeModal('viewDetailsModal')">&times;</span>
+        </div>
+        <div class="modal-body" id="salesOrderDetailsContainer">
+            <!-- Dynamic sales order details will be added here -->
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal('viewDetailsModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Dispatch Confirmation Modal -->
+<div id="dispatchModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirm Dispatch</h2>
+            <span class="close" onclick="closeModal('dispatchModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <label for="jiffyBagQty">Jiffy Bag Quantity:</label>
+            <input type="number" id="jiffyBagQty" min="0" placeholder="Enter Jiffy Bag Quantity">
+
+            <label for="boxQty">Box Quantity:</label>
+            <input type="number" id="boxQty" min="0" placeholder="Enter Box Quantity">
+
+            <label for="consolidatedBoxDimensions">Consolidated Box Dimensions:</label>
+            <input type="text" id="consolidatedBoxDimensions" placeholder="Enter Box Dimensions">
+
+            <label for="consolidatedBoxWeight">Consolidated Box Weight:</label>
+            <input type="text" id="consolidatedBoxWeight" placeholder="Enter Box Weight">
+        </div>
+        <div class="modal-footer">
+            <button onclick="submitDispatch()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Order Details Modal -->
+<div id="salesOrderDetailsModal" class="modal">
+    <div class="modal-content-sales-info">
+        <div class="modal-header">
+            <h2>Sales Order Details</h2>
+            <span class="close" onclick="closeModal('salesOrderDetailsModal')">&times;</span>
+        </div>
+        <div class="modal-body" id="salesOrderDetailsBody">
+            <!-- Sales order details will be dynamically added here -->
+        </div>
+        <div class="modal-footer">
+         
+        </div>
+    </div>
+</div>
+
+
+
+
+    <!-- Weights and Sizes Modal Structure -->
+<div id="weightsModal" class="modal">
+    <div class="modal-content-weights">
+        <div class="WeightsHeader">
+            <h1>Dispatch Edit Record</h1>
+            <!-- Close button -->
+            <button class="close-button1" onclick="closeModal('weightsModal')">&times;</button>
+        </div>
+        <div class="input-container2">
+            <label for="weightsSalesOrder">Sales Order:</label>
+            <input type="text" id="weightsSalesOrder" disabled>
+            <label for="weightsCustomer">Customer:</label>
+            <input type="text" id="weightsCustomer" disabled>
+        </div>
+        
+        <!-- Checkbox for Itemised Weights -->
+        <div class="input-container">
+            <label for="itemisedWeightsCheckbox">Itemised Weights Required:</label>
+            <input type="checkbox" id="itemisedWeightsCheckbox" onchange="toggleWeightInputs()">
+        </div>
+
+        <div id="weightsForm" class="input-container1">
+            <!-- Dynamic form content will be added here -->
+        </div>
+        
+        <!-- New container for shipping boxes in top right of modal -->
+        <div class="boxes-container" id="boxesContainer">
+            <!-- Dynamic box rows will be added here -->
+        </div>
+
+        <!-- Button to add new shipping box -->
+        <button id="AddShipping-ID" onclick="addShippingBox()">
+            <i class="fa-solid fa-circle-plus"></i>Add Shipping Box
+        </button>
+        
+        <div class="BottomButtons">
+          <button id="Bottom1" onclick="submitWeightsAndSizes()">Save</button>
+          <button id="Bottom2" onclick="openDuplicateRecordModal()">Issue Part Shipment</button>
+        </div>
+    </div>
+</div>
+
+</body>
+
+    <script>
+
+console.log('Script loaded');
+
+
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyBe-uDZ1ne26PirlJMa5c3PV3QxPBMG_7E",
+        authDomain: "sheppee-d4d79.firebaseapp.com",
+        databaseURL: "https://sheppee-d4d79-default-rtdb.firebaseio.com",
+        projectId: "sheppee-d4d79",
+        storageBucket: "sheppee-d4d79.appspot.com",
+        messagingSenderId: "107946020238",
+        appId: "1:107946020238:web:8ab77b03da169a4548e8df",
+        measurementId: "G-W08K75V77C"
+    };
+
+    try {
+        firebase.initializeApp(firebaseConfig);
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+    }
+
+    let selectedRowId = null;
+    let selectedRecordRef = null;
+    let deletedRows = [];
+    let selectedRowsForDuplicate = []; // Track rows selected for duplication
+    let activeConsolidationFilter = null; // Track the active consolidation filter
+
+    // Function to fetch data from Firebase and populate the table
+function fetchRecords(callback) {
+    const recordsTableBody = document.getElementById('recordsTable').getElementsByTagName('tbody')[0];
+    recordsTableBody.innerHTML = ''; // Clear any existing rows
+
+    // Reference to the "Dispatch Test" node in Firebase
+    const dispatchRef = firebase.database().ref('Dispatch Test');
+
+    dispatchRef.once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const record = childSnapshot.val();
+            const salesOrder = record["Sales Order"] || 'N/A';
+            const customer = record["Customer"] || 'N/A';
+            const datePacked = record["Date Packed"] || 'N/A';
+            const dateDispatched = record["Date Dispatched"] || 'N/A';
+            const document = record["Document"] || 'N/A';
+            const externalStatus = record["External Status"] || 'N/A'; // Get the "External Status" field
+            const consolidationAssignment = record["Consolidation Assignment"] || ''; // Get the "Consolidation Assignment" field
+
+            // Determine the background color class based on weights and dimensions data
+            const bgColorClass = getRowBackgroundColorClass(record);
+
+            // Create a new row for each record
+            const row = recordsTableBody.insertRow();
+            row.classList.add(bgColorClass); // Apply background color class
+            row.dataset.externalStatus = externalStatus; // Store the "External Status" in a dataset attribute
+            row.dataset.recordKey = childSnapshot.key; // Store the Firebase record key in the row for reference
+            row.dataset.consolidationAssignment = consolidationAssignment; // Store the "Consolidation Assignment" in a dataset attribute
+
+            // Add cells and content
+            const cellSalesOrder = row.insertCell(0);
+            const cellCustomer = row.insertCell(1);
+            const cellDatePacked = row.insertCell(2);
+            const cellDateDispatched = row.insertCell(3);
+            const cellDocument = row.insertCell(4);
+
+            // If the record has "Consolidation Assignment", add the icon to the first cell
+            if (consolidationAssignment) {
+                cellSalesOrder.innerHTML = `
+                    <div class="flex-container">
+                        <i class="fa-brands fa-dropbox"></i>
+                        <span class="center-text">${salesOrder}</span>
+                    </div>`;
+            } else {
+                cellSalesOrder.innerHTML = `
+                    <div class="flex-container">
+                        <span class="center-text">${salesOrder}</span>
+                    </div>`;
+            }
+
+            cellCustomer.innerHTML = `<div class="flex-container"><span class="center-text">${customer}</span></div>`;
+            cellDatePacked.innerHTML = `<div class="flex-container"><span class="center-text">${datePacked}</span></div>`;
+            cellDateDispatched.innerHTML = `<div class="flex-container"><span class="center-text">${dateDispatched}</span></div>`;
+            cellDocument.innerHTML = `<div class="flex-container"><span class="center-text">${document}</span></div>`;
+
+            // Add click event to select/unselect row
+            row.onclick = function () {
+                try {
+                    // Check if the current row is already selected
+                    if (selectedRowId === row.dataset.recordKey) {
+                        row.classList.remove('selected');
+                        selectedRowId = null;
+                        selectedRecordRef = null;
+                    } else {
+                        // Deselect the previously selected row if there is one
+                        if (selectedRowId) {
+                            const previouslySelectedRow = document.querySelector(`[data-record-key="${selectedRowId}"]`);
+                            if (previouslySelectedRow) {
+                                previouslySelectedRow.classList.remove('selected');
+                            }
+                        }
+
+                        // Select the new row
+                        row.classList.add('selected');
+                        selectedRowId = row.dataset.recordKey;
+                        selectedRecordRef = childSnapshot.ref;
+                    }
+                } catch (error) {
+                    console.error("Error selecting row:", error);
+                }
+            };
+        });
+
+        if (callback) callback(); // Execute the callback function if provided
+    }, (error) => {
+        console.error("Error fetching data from Firebase:", error);
+    });
+}
+
+    // Function to update a specific row in the table
+    function updateTableRow(recordKey) {
+        // Find the row with the matching record key
+        const row = document.querySelector(`[data-record-key="${recordKey}"]`);
+
+        if (!row) return; // If no row found, exit
+
+        // Fetch the updated data for this record from Firebase
+        selectedRecordRef.once('value', (snapshot) => {
+            const record = snapshot.val();
+
+            const salesOrder = record["Sales Order"] || 'N/A';
+            const customer = record["Customer"] || 'N/A';
+            const datePacked = record["Date Packed"] || 'N/A';
+            const dateDispatched = record["Date Dispatched"] || 'N/A';
+            const document = record["Document"] || 'N/A';
+            const consolidationAssignment = record["Consolidation Assignment"] || ''; // Get the "Consolidation Assignment" field
+
+            // Update the table cells with new data
+            if (consolidationAssignment) {
+                row.cells[0].innerHTML = `
+                    <div class="flex-container">
+                        <i class="fa-brands fa-dropbox"></i>
+                        <span class="center-text">${salesOrder}</span>
+                    </div>`;
+            } else {
+                row.cells[0].innerHTML = `
+                    <div class="flex-container">
+                        <span class="center-text">${salesOrder}</span>
+                    </div>`;
+            }
+
+            row.cells[1].innerHTML = `<div class="flex-container"><span class="center-text">${customer}</span></div>`;
+            row.cells[2].innerHTML = `<div class="flex-container"><span class="center-text">${datePacked}</span></div>`;
+            row.cells[3].innerHTML = `<div class="flex-container"><span class="center-text">${dateDispatched}</span></div>`;
+            row.cells[4].innerHTML = `<div class="flex-container"><span class="center-text">${document}</span></div>`;
+
+            // Update the background color class based on weights and dimensions data
+            row.className = getRowBackgroundColorClass(record);
+        }, (error) => {
+            console.error("Error fetching updated record from Firebase:", error);
+        });
+    }
+
+    // Updated function to determine the row background color based on weights and dimensions data
+    function getRowBackgroundColorClass(record) {
+        const itemisedWeightsRequired = record["Itemised Weights Required"]; // Check if itemised weights are required
+        let allWeightsInputted = true;
+        let someWeightsInputted = false;
+        let allBoxesDataInputted = true;
+
+        if (itemisedWeightsRequired) {
+            // Check each row for weight data if itemised weights are required
+            Object.keys(record).forEach(key => {
+                if (key.startsWith('Row_ ')) {
+                    const row = record[key];
+                    const hasWeight = row["Weight"] && row["Weight"].trim() !== "";
+
+                    if (!hasWeight) {
+                        allWeightsInputted = false;
+                    } else {
+                        someWeightsInputted = true;
+                    }
+                }
+            });
+        } else {
+            // Check if all shipping boxes have weight and dimensions data
+            const shippingBoxes = record["Shipping Boxes"] || {};
+            Object.keys(shippingBoxes).forEach(boxKey => {
+                const box = shippingBoxes[boxKey];
+                const hasWeight = box["Weight"] && box["Weight"].trim() !== "";
+                const hasDimensions = box["Dimensions"] && box["Dimensions"].trim() !== "";
+
+                if (!hasWeight || !hasDimensions) {
+                    allBoxesDataInputted = false;
+                } else {
+                    someWeightsInputted = true;
+                }
+            });
+        }
+
+        // Determine background color class based on the criteria
+        if (itemisedWeightsRequired) {
+            if (allWeightsInputted && someWeightsInputted) {
+                return 'green-bg'; // All itemised rows have data
+            } else if (!allWeightsInputted && someWeightsInputted) {
+                return 'yellow-bg'; // Some itemised rows have data
+            } else {
+                return 'red-bg'; // No itemised rows have data
+            }
+        } else {
+            if (allBoxesDataInputted && someWeightsInputted) {
+                return 'green-bg'; // All boxes have data
+            } else if (!allBoxesDataInputted && someWeightsInputted) {
+                return 'yellow-bg'; // Some boxes have data
+            } else {
+                return 'red-bg'; // No boxes have data
+            }
+        }
+    }
+
+
+
+
+
+// Function to switch between tabs
+function switchTab(tabName) {
+    deselectAllRows();
+
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+
+    const activeTab = Array.from(tabs).find(tab => tab.textContent === tabName);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    const recordsTable = document.getElementById('recordsTable');
+    const tableHead = recordsTable.getElementsByTagName('thead')[0];
+    const tableBody = recordsTable.getElementsByTagName('tbody')[0];
+
+    // Clear the existing table head and body
+    tableHead.innerHTML = '';
+    tableBody.innerHTML = '';
+
+    // Add headers for all tabs (including [C] Dispatched)
+    const newHeaderRow = tableHead.insertRow();
+    newHeaderRow.insertCell(0).outerHTML = '<th>Sales Order</th>';
+    newHeaderRow.insertCell(1).outerHTML = '<th>Customer</th>';
+    newHeaderRow.insertCell(2).outerHTML = '<th>Date Packed</th>';
+    newHeaderRow.insertCell(3).outerHTML = '<th>Date Dispatched</th>';
+    newHeaderRow.insertCell(4).outerHTML = '<th>Document</th>';
+
+    if (tabName === "Consolidation Dispatched") {
+        // Fetch records specific to "Consolidation - Dispatched Records"
+        fetchConsolidatedDispatchedRecords();
+    } else {
+        // Fetch and display relevant records based on tab
+        fetchRecords(function() {
+            filterTableRows(tabName);
+        });
+    }
+
+    // Enable or disable the "Mark as Packed" button based on the selected tab
+    const markAsPackedButton = document.getElementById('markAsPackedButton');
+    if (tabName === "Awaiting Packing") {
+        markAsPackedButton.classList.remove('disabled');
+    } else {
+        markAsPackedButton.classList.add('disabled');
+    }
+}
+
+// Function to fetch and display records under [C] Dispatched tab
+function fetchConsolidatedDispatchedRecords(callback) {
+    const recordsTableBody = document.getElementById('recordsTable').getElementsByTagName('tbody')[0];
+    recordsTableBody.innerHTML = ''; // Clear any existing rows
+
+    // Fetch all nodes under "Consolidation - Dispatched Records"
+    firebase.database().ref('Consolidation - Dispatched Records').once('value', snapshot => {
+        snapshot.forEach(parentSnapshot => {
+            const parentNodeKey = parentSnapshot.key;
+            const parentNodeData = parentSnapshot.val();
+
+            // Create a row for the parent node
+            const dateRow = recordsTableBody.insertRow();
+            dateRow.classList.add('parent-node-row');
+
+            const cellSalesOrder = dateRow.insertCell(0);
+            cellSalesOrder.innerHTML = `
+                <div class="flex-container">
+                    <i class="fa fa-arrow-right toggle-arrow" style="cursor: pointer;"></i>
+                    <span class="center-text">${parentNodeKey}</span>
+                </div>`;
+            dateRow.insertCell(1).innerHTML = '-'; // Placeholder
+            const cellDatePacked = dateRow.insertCell(2);
+            cellDatePacked.innerHTML = `
+                <div class="flex-container">
+                    <i class="fa fa-info-circle info-icon" style="cursor: pointer;" onclick="showConsolidationInfo('${parentNodeKey}')"></i>
+                </div>`;
+            dateRow.insertCell(3).innerHTML = '-'; // Placeholder
+            dateRow.insertCell(4).innerHTML = '-'; // Placeholder
+
+            // Set up click event for the arrow icon to toggle visibility of sales orders
+            cellSalesOrder.querySelector('.toggle-arrow').onclick = function() {
+                toggleSalesOrders(parentNodeKey, this);
+            };
+
+            // Create rows for each sales order within the "Sales Orders" child node but keep them hidden initially
+            const salesOrders = parentNodeData["Sales Orders"];
+            if (salesOrders) {
+                for (const [salesOrderKey, salesOrderData] of Object.entries(salesOrders)) {
+                    const salesOrderRow = recordsTableBody.insertRow();
+                    salesOrderRow.classList.add('child-sales-order-row');
+                    salesOrderRow.dataset.parentNodeKey = parentNodeKey;
+                    salesOrderRow.style.display = 'none'; // Initially hidden
+
+                    salesOrderRow.insertCell(0).innerHTML = `<div class="flex-container"><span class="center-text">${salesOrderKey}</span></div>`;
+                    salesOrderRow.insertCell(1).innerHTML = `<div class="flex-container"><span class="center-text">${salesOrderData["Customer"] || '-'}</span></div>`;
+                    salesOrderRow.insertCell(2).innerHTML = `
+                        <div class="flex-container">
+                            <i class="fa fa-info-circle info-icon" style="cursor: pointer;" onclick="showSalesOrderDetails('${parentNodeKey}', '${salesOrderKey}')"></i>
+                        </div>`;
+                    salesOrderRow.insertCell(3).innerHTML = `<div class="flex-container"><span class="center-text">${salesOrderData["Date Dispatched"] || '-'}</span></div>`;
+                    salesOrderRow.insertCell(4).innerHTML = `<div class="flex-container"><span class="center-text">${salesOrderData["Document"] || '-'}</span></div>`;
+                }
+            }
+        });
+
+        if (callback) callback();
+    }, error => {
+        console.error("Error fetching data from Firebase:", error);
+    });
+}
+
+// Function to show Consolidation Information details in a modal
+function showConsolidationInfo(parentNodeKey) {
+    const salesOrderDetailsBody = document.getElementById('salesOrderDetailsBody');
+    salesOrderDetailsBody.innerHTML = ''; // Clear previous details
+
+    // Fetch the consolidation information data
+    const consolidationInfoRef = firebase.database().ref(`Consolidation - Dispatched Records/${parentNodeKey}/Consolidation Information`);
+    consolidationInfoRef.once('value', snapshot => {
+        const consolidationData = snapshot.val();
+
+        // Check if there is data in "Consolidation Information"
+        if (consolidationData && typeof consolidationData === 'object') {
+            const infoList = document.createElement('ul');
+
+            // Create list items for each detail in "Consolidation Information"
+            Object.keys(consolidationData).forEach(key => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${key}: ${consolidationData[key]}`;
+                infoList.appendChild(listItem);
+            });
+
+            // Append the list to the modal body
+            salesOrderDetailsBody.appendChild(infoList);
+        } else {
+            salesOrderDetailsBody.innerHTML = '<p>No consolidation information available.</p>';
+        }
+
+        // Open the modal
+        openModal('salesOrderDetailsModal');
+    });
+}
+
+
+// Function to toggle visibility of sales orders under a parent node
+function toggleSalesOrders(parentNodeKey, arrowElement) {
+    const salesOrderRows = document.querySelectorAll(`.child-sales-order-row[data-parent-node-key="${parentNodeKey}"]`);
+    salesOrderRows.forEach(row => {
+        if (row.style.display === 'none') {
+            row.style.display = ''; // Show row
+            arrowElement.classList.remove('fa-arrow-right');
+            arrowElement.classList.add('fa-arrow-down');
+        } else {
+            row.style.display = 'none'; // Hide row
+            arrowElement.classList.remove('fa-arrow-down');
+            arrowElement.classList.add('fa-arrow-right');
+        }
+    });
+}
+
+// Function to show Sales Order details in a modal
+function showSalesOrderDetails(parentNodeKey, salesOrderKey) {
+    const salesOrderDetailsBody = document.getElementById('salesOrderDetailsBody');
+    salesOrderDetailsBody.innerHTML = ''; // Clear previous details
+
+    // Fetch the sales order data
+    const salesOrderRef = firebase.database().ref(`Consolidation - Dispatched Records/${parentNodeKey}/Sales Orders/${salesOrderKey}`);
+    salesOrderRef.once('value', snapshot => {
+        const salesOrderData = snapshot.val();
+
+        // Check if there are rows with part numbers and quantities
+        if (salesOrderData && typeof salesOrderData === 'object') {
+            const rowsData = Object.keys(salesOrderData).filter(key => key.startsWith('Row_')).map(key => salesOrderData[key]);
+
+            // Create a table for displaying rows
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+
+            // Create table header
+            const headerRow = document.createElement('tr');
+            ['Part Number', 'Quantity'].forEach(header => {
+                const th = document.createElement('th');
+                th.style.border = '1px solid black';
+                th.style.padding = '8px';
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Create table rows for each part number and quantity
+            rowsData.forEach(row => {
+                const tableRow = document.createElement('tr');
+                const partNoCell = document.createElement('td');
+                partNoCell.textContent = row['Part No'] || '-';
+                partNoCell.style.border = '1px solid black';
+                partNoCell.style.padding = '8px';
+                tableRow.appendChild(partNoCell);
+
+                const qtyCell = document.createElement('td');
+                qtyCell.textContent = row['Qty'] || '-';
+                qtyCell.style.border = '1px solid black';
+                qtyCell.style.padding = '8px';
+                tableRow.appendChild(qtyCell);
+
+                table.appendChild(tableRow);
+            });
+
+            // Append the table to the modal body
+            salesOrderDetailsBody.appendChild(table);
+        } else {
+            salesOrderDetailsBody.innerHTML = '<p>No details available.</p>';
+        }
+
+        // Open the modal
+        openModal('salesOrderDetailsModal');
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to filter table rows based on the active tab and filters
+function filterTableRows(tabName) {
+    const rows = document.querySelectorAll('#recordsTable tbody tr');
+    rows.forEach(row => {
+        const externalStatus = row.dataset.externalStatus;
+        const consolidationAssignment = row.dataset.consolidationAssignment;
+
+        // Show rows that match the tab name and the active consolidation filter (if any), hide others
+        if (
+            (tabName === "Awaiting Packing" && externalStatus === "Awaiting Packing") ||
+            (tabName === "Packed" && externalStatus === "Packed") ||
+            (tabName === "Due to Dispatch" && externalStatus === "Due to Dispatch") ||
+            (tabName === "Dispatched" && externalStatus === "Dispatched")
+        ) {
+            if (activeConsolidationFilter === null || consolidationAssignment === activeConsolidationFilter) {
+                row.style.display = ''; // Show row if it matches the tab and filter
+            } else {
+                row.style.display = 'none'; // Hide row if it does not match the active filter
+            }
+        } else {
+            row.style.display = 'none'; // Hide rows that don't match the tab
+        }
+    });
+}
+   
+
+    // Function to toggle supplier button and filter rows by "Consolidation Assignment"
+    function toggleSupplierButton(buttonId, supplierName) {
+        // Deselect any selected rows
+        deselectAllRows();
+
+        const button = document.getElementById(buttonId);
+
+        // Toggle button active state
+        if (activeConsolidationFilter === supplierName) {
+            activeConsolidationFilter = null;
+            button.classList.remove('active');
+        } else {
+            activeConsolidationFilter = supplierName;
+            document.querySelectorAll('#ConsolidationSuppliers button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+
+        // Apply filter
+        filterTableRows(document.querySelector('.tab.active').textContent);
+    }
+
+    // Function to deselect all rows
+    function deselectAllRows() {
+        const previouslySelectedRow = document.querySelector(`[data-record-key="${selectedRowId}"]`);
+        if (previouslySelectedRow) {
+            previouslySelectedRow.classList.remove('selected');
+        }
+        selectedRowId = null;
+        selectedRecordRef = null;
+    }
+
+    // Event listeners for supplier buttons
+    document.getElementById('EmhartSwedenSupplier').onclick = function() {
+        toggleSupplierButton('EmhartSwedenSupplier', 'Emhart Sweden');
+    };
+
+    document.getElementById('EmhartSwissSupplier').onclick = function() {
+        toggleSupplierButton('EmhartSwissSupplier', 'Emhart Swiss');
+    };
+
+    document.getElementById('GlamoroSupplier').onclick = function() {
+        toggleSupplierButton('GlamoroSupplier', 'Glamoro');
+    };
+
+    document.getElementById('RondotFranceSupplier').onclick = function() {
+        toggleSupplierButton('RondotFranceSupplier', 'Rondot France');
+    };
+
+    document.getElementById('RondotSpainSupplier').onclick = function() {
+        toggleSupplierButton('RondotSpainSupplier', 'Rondot Spain');
+    };
+
+    // Function to mark the selected record as packed
+    function markAsPacked() {
+        // Check if the button is disabled
+        if (document.getElementById('markAsPackedButton').classList.contains('disabled')) {
+            return; // Do nothing if the button is disabled
+        }
+
+        if (!selectedRecordRef) {
+            alert("Please select a record to mark as packed.");
+            return;
+        }
+
+        // Validate if all rows have weights
+        selectedRecordRef.once('value', (snapshot) => {
+            const record = snapshot.val();
+            let allWeightsInputted = true;
+
+            // Check each row for weight data
+            Object.keys(record).forEach(key => {
+                if (key.startsWith('Row_')) {
+                    const row = record[key];
+                    if (!row["Weight"] || row["Weight"].trim() === "") {
+                        allWeightsInputted = false;
+                    }
+                }
+            });
+
+            if (!allWeightsInputted) {
+                alert('All weights are not inputted.');
+                return;
+            }
+
+            // If all weights are inputted, update the external status to "Packed"
+            selectedRecordRef.update({ "External Status": "Packed" }).then(() => {
+                alert('Record marked as packed.');
+                fetchRecords(function () {
+                    switchTab('Packed'); // Switch to the "Packed" tab after marking as packed
+                });
+            }).catch(error => {
+                console.error('Error updating record:', error);
+                alert('Failed to update the record. Please try again.');
+            });
+        });
+    }
+
+    // Fetch records on page load and select the "Awaiting Packing" tab
+    window.onload = function () {
+        fetchRecords(function () {
+            switchTab('Awaiting Packing'); // Automatically select the "Awaiting Packing" tab
+        });
+    };
+
+    // Function to open a modal
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Function to open the consolidation assignment modal
+    function openConsolidationModal() {
+        if (!selectedRecordRef) {
+            alert("Please select a record to assign to consolidation.");
+            return;
+        }
+        openModal('consolidationModal');
+    }
+
+    // Function to finalize consolidation assignment
+    function finalizeConsolidation() {
+        const selectedOption = document.querySelector('input[name="consolidationType"]:checked');
+
+        if (!selectedOption) {
+            alert("Please select a consolidation type.");
+            return;
+        }
+
+        const consolidationType = selectedOption.value;
+
+        selectedRecordRef.update({ "Consolidation Assignment": consolidationType })
+            .then(() => {
+                alert(`Record assigned to ${consolidationType} consolidation.`);
+                closeModal('consolidationModal');
+                
+                // Refresh the table data and maintain the current tab and filter
+                fetchRecords(function() {
+                    // Maintain the active tab
+                    const activeTab = document.querySelector('.tab.active').textContent;
+                    switchTab(activeTab); // Reapply the tab filter
+                });
+
+            })
+            .catch(error => {
+                console.error('Error assigning consolidation:', error);
+                alert('Failed to assign consolidation. Please try again.');
+            });
+    }
+
+    // Function to remove the consolidation assignment from the selected record
+    function removeConsolidation() {
+        if (!selectedRecordRef) {
+            alert("Please select a record to remove from consolidation.");
+            return;
+        }
+
+        // Confirm the removal action with the user
+        if (!confirm("Are you sure you want to remove this record from consolidation?")) {
+            return;
+        }
+
+        // Remove the "Consolidation Assignment" field from the selected record
+        selectedRecordRef.child("Consolidation Assignment").remove()
+            .then(() => {
+                alert("Consolidation assignment removed successfully.");
+                
+                // Refresh the table data and maintain the current tab and filter
+                fetchRecords(function() {
+                    // Maintain the active tab
+                    const activeTab = document.querySelector('.tab.active').textContent;
+                    switchTab(activeTab); // Reapply the tab filter
+                });
+
+            })
+            .catch(error => {
+                console.error('Error removing consolidation assignment:', error);
+                alert('Failed to remove consolidation assignment. Please try again.');
+            });
+    }
+
+    // Function to open weights and sizes modal
+    function openWeightsModal() {
+        if (!selectedRecordRef) return;
+
+        const weightsForm = document.getElementById('weightsForm');
+        weightsForm.innerHTML = ''; // Clear previous form content
+
+        const boxesContainer = document.getElementById('boxesContainer');
+        boxesContainer.innerHTML = ''; // Clear existing boxes
+
+        // Fetch selected record data from Firebase
+        selectedRecordRef.once('value', (snapshot) => {
+            const record = snapshot.val();
+
+            // Display Sales Order and Customer at the top with labels
+            document.getElementById('weightsSalesOrder').value = record["Sales Order"];
+            document.getElementById('weightsCustomer').value = record["Customer"];
+
+            // Load the state of the "Itemised Weights" checkbox
+            const itemisedWeightsCheckbox = document.getElementById('itemisedWeightsCheckbox');
+            itemisedWeightsCheckbox.checked = record["Itemised Weights Required"] || false;
+
+            // Display headers for weights data (only weight, no dimensions per row)
+            const headers = ['Part Number', 'Quantity', 'Item Weight'];
+            const headerRow = document.createElement('div');
+            headerRow.classList.add('row-data-container');
+            headers.forEach(header => {
+                const headerLabel = document.createElement('label');
+                headerLabel.textContent = header;
+                headerRow.appendChild(headerLabel);
+            });
+            weightsForm.appendChild(headerRow);
+
+            // Display each row for weights input
+            Object.keys(record).forEach(key => {
+                if (key.startsWith('Row_')) {
+                    createWeightsInputFields(weightsForm, key, record[key]);
+                }
+            });
+
+            // Display existing boxes
+            if (record["Shipping Boxes"]) {
+                Object.keys(record["Shipping Boxes"]).forEach((boxKey) => {
+                    const boxData = record["Shipping Boxes"][boxKey];
+                    addShippingBoxWithData(boxKey, boxData);
+                });
+            }
+
+            // Show the modal
+            openModal('weightsModal');
+        });
+    }
+
+       // Function to add a new shipping box dynamically
+       function addShippingBox() {
+        const boxesContainer = document.getElementById('boxesContainer');
+        const boxCount = boxesContainer.children.length + 1; // Determine box number based on current count
+        const boxDiv = document.createElement('div');
+        boxDiv.classList.add('box-data-container');
+        
+        const boxLabelInput = document.createElement('input');
+        boxLabelInput.type = 'text';
+        boxLabelInput.value = `Box ${boxCount}`;
+        boxLabelInput.classList.add('box-label-input');
+        boxDiv.appendChild(boxLabelInput);
+
+        const removeBox = document.createElement('span');
+        removeBox.textContent = '×';
+        removeBox.classList.add('remove-box');
+        removeBox.onclick = function() {
+            boxesContainer.removeChild(boxDiv);
+        };
+        boxDiv.appendChild(removeBox);
+
+        const weightInput = document.createElement('input');
+        weightInput.type = 'text';
+        weightInput.placeholder = 'Weight';
+        weightInput.id = `box${boxCount}-Weight`;
+        boxDiv.appendChild(weightInput);
+
+        const dimensionsInput = document.createElement('input');
+        dimensionsInput.type = 'text';
+        dimensionsInput.placeholder = 'Dimensions';
+        dimensionsInput.id = `box${boxCount}-Dimensions`;
+        boxDiv.appendChild(dimensionsInput);
+
+        boxesContainer.appendChild(boxDiv);
+    }
+
+    // Function to add a shipping box with existing data
+    function addShippingBoxWithData(boxKey, boxData) {
+        const boxesContainer = document.getElementById('boxesContainer');
+        const boxDiv = document.createElement('div');
+        boxDiv.classList.add('box-data-container');
+
+        const boxLabelInput = document.createElement('input');
+        boxLabelInput.type = 'text';
+        boxLabelInput.value = boxKey;
+        boxLabelInput.classList.add('box-label-input');
+        boxDiv.appendChild(boxLabelInput);
+
+        const removeBox = document.createElement('span');
+        removeBox.textContent = '×';
+        removeBox.classList.add('remove-box');
+        removeBox.onclick = function() {
+            boxesContainer.removeChild(boxDiv);
+        };
+        boxDiv.appendChild(removeBox);
+
+        const weightInput = document.createElement('input');
+        weightInput.type = 'text';
+        weightInput.placeholder = 'Weight';
+        weightInput.value = boxData.Weight || "";
+        boxDiv.appendChild(weightInput);
+
+        const dimensionsInput = document.createElement('input');
+        dimensionsInput.type = 'text';
+        dimensionsInput.placeholder = 'Dimensions';
+        dimensionsInput.value = boxData.Dimensions || "";
+        boxDiv.appendChild(dimensionsInput);
+
+        boxesContainer.appendChild(boxDiv);
+    }
+
+    // Function to toggle weight input boxes based on the checkbox state
+    function toggleWeightInputs() {
+        const weightInputs = document.querySelectorAll('#weightsForm input[id$="-Weight"]');
+        const isChecked = document.getElementById('itemisedWeightsCheckbox').checked;
+
+        weightInputs.forEach(input => {
+            input.disabled = !isChecked; // Enable or disable input based on checkbox
+        });
+    }
+
+    // Function to save weights, sizes, and shipping boxes to Firebase
+    function submitWeightsAndSizes() {
+        const updates = {};
+
+        // Collect updates for each row
+        const weightsForm = document.getElementById('weightsForm');
+
+        Array.from(weightsForm.children).forEach(child => {
+            if (child.classList.contains('row-data-container') && child.dataset.rowKey) {
+                const rowKey = child.dataset.rowKey;
+
+                // Fetch existing data from Firebase for this row
+                selectedRecordRef.child(rowKey).once('value', snapshot => {
+                    const existingData = snapshot.val() || {};
+
+                    // Initialize updates for the row with existing data
+                    updates[rowKey] = { ...existingData };
+
+                    // Add new data for Weight
+                    const weightInput = document.getElementById(`${rowKey}-Weight`);
+                    if (weightInput) {
+                        const weight = weightInput.value.trim(); // Trim whitespace
+                        updates[rowKey]["Weight"] = weight; // Add or update weight data
+                    }
+
+                    // Save the updated row data back to Firebase
+                    selectedRecordRef.child(rowKey).update(updates[rowKey]);
+                });
+            }
+        });
+
+        // Save the state of the "Itemised Weights" checkbox
+        const itemisedWeightsCheckbox = document.getElementById('itemisedWeightsCheckbox');
+        updates["Itemised Weights Required"] = itemisedWeightsCheckbox.checked;
+
+        // Collect shipping box data
+        const boxesContainer = document.getElementById('boxesContainer');
+        const boxesUpdates = {};
+        const existingBoxLabels = [];
+
+        Array.from(boxesContainer.children).forEach((boxDiv) => {
+            if (boxDiv.classList.contains('box-data-container')) {
+                const boxLabelInput = boxDiv.querySelector('.box-label-input');
+                const weightInput = boxDiv.querySelector(`input[placeholder="Weight"]`);
+                const dimensionsInput = boxDiv.querySelector(`input[placeholder="Dimensions"]`);
+
+                if (boxLabelInput && weightInput && dimensionsInput) {
+                    const boxKey = boxLabelInput.value.trim() || `Box ${boxesContainer.children.length}`;
+                    const boxData = {
+                        "Weight": weightInput.value.trim(),
+                        "Dimensions": dimensionsInput.value.trim()
+                    };
+
+                    boxesUpdates[boxKey] = boxData; // Add box data with the label
+                    existingBoxLabels.push(boxKey);
+                }
+            }
+        });
+
+        // Remove any boxes from Firebase that are no longer in the modal
+        selectedRecordRef.child('Shipping Boxes').once('value', snapshot => {
+            const existingBoxes = snapshot.val() || {};
+            Object.keys(existingBoxes).forEach(boxKey => {
+                if (!existingBoxLabels.includes(boxKey)) {
+                    selectedRecordRef.child(`Shipping Boxes/${boxKey}`).remove();
+                }
+            });
+
+            // Update or add the new boxes
+            selectedRecordRef.child('Shipping Boxes').update(boxesUpdates).then(() => {
+                // Save the state of the "Itemised Weights" checkbox
+                selectedRecordRef.update({ "Itemised Weights Required": itemisedWeightsCheckbox.checked }).then(() => {
+                    alert('Weights, Sizes, and Shipping Boxes saved successfully.');
+                    closeModal('weightsModal');
+                }).catch(error => {
+                    console.error('Error saving itemised weights state to Firebase:', error);
+                    alert('Failed to save itemised weights state. Please try again.');
+                });
+            }).catch(error => {
+                console.error('Error saving shipping boxes to Firebase:', error);
+                alert('Failed to save shipping boxes. Please try again.');
+            });
+        });
+    }
+
+    // Function to open the duplicate record modal
+    function openDuplicateRecordModal() {
+        if (!selectedRecordRef) {
+            alert("Please select a record to issue a part shipment.");
+            return;
+        }
+
+        const duplicateRowsContainer = document.getElementById('duplicateRowsContainer');
+        duplicateRowsContainer.innerHTML = ''; // Clear previous rows
+
+        // Fetch selected record data from Firebase
+        selectedRecordRef.once('value', (snapshot) => {
+            const record = snapshot.val();
+            
+            // Display checkboxes for each row to select for duplication
+            Object.keys(record).forEach(key => {
+                if (key.startsWith('Row_')) {
+                    const rowDiv = document.createElement('div');
+                    const rowCheckbox = document.createElement('input');
+                    rowCheckbox.type = 'checkbox';
+                    rowCheckbox.id = `duplicate-${key}`;
+                    rowCheckbox.value = key;
+                    
+                    const rowLabel = document.createElement('label');
+                    rowLabel.htmlFor = `duplicate-${key}`;
+                    rowLabel.textContent = `${record[key]["Part No"]} - ${record[key]["Qty"]}`;
+
+                    rowDiv.appendChild(rowCheckbox);
+                    rowDiv.appendChild(rowLabel);
+                    duplicateRowsContainer.appendChild(rowDiv);
+                }
+            });
+
+            // Show the modal for row selection
+            openModal('duplicateRecordModal');
+            closeModal('weightsModal');
+        });
+    }
+
+    // Function to finalize the duplicate and remove selected rows from the original record
+    function duplicateSelectedRows() {
+        const rowsToDuplicate = [];
+        const duplicateRowsContainer = document.getElementById('duplicateRowsContainer');
+        const checkboxes = duplicateRowsContainer.querySelectorAll('input[type="checkbox"]:checked');
+        
+        checkboxes.forEach(checkbox => {
+            rowsToDuplicate.push(checkbox.value);
+        });
+
+        if (rowsToDuplicate.length === 0) {
+            alert("No rows selected for duplication.");
+            return;
+        }
+
+        // Fetch original record to modify and duplicate
+        selectedRecordRef.once('value', (snapshot) => {
+            const originalRecord = snapshot.val();
+            const newRecord = { ...originalRecord };
+            const originalSalesOrder = originalRecord["Sales Order"];
+            
+            // Check if the original sales order already contains a '/'
+            if (originalSalesOrder.includes('/')) {
+                alert("Cannot create a part shipment unless it is the original Sales Order.");
+                return;
+            }
+
+            const dispatchRef = firebase.database().ref('Dispatch Test');
+            
+            // Check for the next available duplicate number
+            dispatchRef.once('value', (snapshot) => {
+                let maxDuplicate = 0;
+                snapshot.forEach((childSnapshot) => {
+                    const existingRecord = childSnapshot.val();
+                    const existingSalesOrder = existingRecord["Sales Order"];
+                    if (existingSalesOrder.startsWith(originalSalesOrder + '/')) {
+                        const duplicateNumber = parseInt(existingSalesOrder.split('/')[1], 10);
+                        if (!isNaN(duplicateNumber) && duplicateNumber > maxDuplicate) {
+                            maxDuplicate = duplicateNumber;
+                        }
+                    }
+                });
+
+                const newSalesOrder = `${originalSalesOrder}/${maxDuplicate + 1}`;
+                newRecord["Sales Order"] = newSalesOrder;
+
+                // Retain only the selected rows in the new record
+                Object.keys(newRecord).forEach(key => {
+                    if (key.startsWith('Row_') && !rowsToDuplicate.includes(key)) {
+                        delete newRecord[key];
+                    }
+                });
+
+                // Remove the selected rows from the original record
+                rowsToDuplicate.forEach(rowKey => {
+                    selectedRecordRef.child(rowKey).remove();
+                });
+
+                // Create a new record in Firebase with the new sales order
+                dispatchRef.push(newRecord).then(() => {
+                    alert(`Record duplicated as ${newSalesOrder}.`);
+                    closeModal('duplicateRecordModal');
+                    fetchRecords(function() {
+                        switchTab('Awaiting Packing'); // Refresh table and switch to "Awaiting Packing" tab
+                    });
+                }).catch(error => {
+                    console.error('Error duplicating record:', error);
+                    alert('Failed to duplicate the record. Please try again.');
+                });
+            });
+        });
+    }
+
+// Function to create input fields for weights (only weight, no dimensions per row)
+function createWeightsInputFields(container, rowKey, rowData) {
+    const rowDiv = document.createElement('div');
+    rowDiv.classList.add('row-data-container');
+    rowDiv.dataset.rowKey = rowKey;
+
+    // Create a single container for all input fields with a red background
+    const inputContainer = document.createElement('div');
+    inputContainer.style.backgroundColor = '#f0f8ff';
+    inputContainer.style.padding = '20px'; // Optional padding for aesthetics
+    inputContainer.style.margin = '5px 0'; // Optional margin for spacing
+    inputContainer.style.display = 'flex'; // Flexbox for alignment
+    inputContainer.style.justifyContent = 'space-between'; // Space between items
+    inputContainer.style.alignItems = 'center'; // Center align items vertically
+    inputContainer.style.textAlign = 'center'; // Center align text in the container
+    inputContainer.style.width = '100%';
+    inputContainer.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.3)'; // Add a drop shadow
+    inputContainer.style.borderRadius = '15px'; // Add a drop shadow
+
+
+    // Part No input field
+    const partNoInput = document.createElement('input');
+    partNoInput.type = 'text';
+    partNoInput.id = `${rowKey}-Part No`;
+    partNoInput.value = rowData["Part No"] || "";
+    partNoInput.placeholder = 'Part No';
+    partNoInput.disabled = true; // Keeps existing data static
+    partNoInput.style.textAlign = 'center'; // Center align input text
+
+    // Qty input field
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'text';
+    qtyInput.id = `${rowKey}-Qty`;
+    qtyInput.value = rowData["Qty"] || "";
+    qtyInput.placeholder = 'Qty';
+    qtyInput.disabled = true; // Keeps existing data static
+    qtyInput.style.textAlign = 'center'; // Center align input text
+
+    // Weight input field
+    const weightInput = document.createElement('input');
+    weightInput.type = 'text';
+    weightInput.id = `${rowKey}-Weight`;
+    weightInput.value = rowData["Weight"] || "";
+    weightInput.placeholder = 'Weight';
+    weightInput.disabled = !document.getElementById('itemisedWeightsCheckbox').checked; // Disable based on checkbox state
+    weightInput.style.textAlign = 'center'; // Center align input text
+
+    // Append input fields to the container
+    inputContainer.appendChild(partNoInput);
+    inputContainer.appendChild(qtyInput);
+    inputContainer.appendChild(weightInput);
+
+    // Append the input container to the rowDiv
+    rowDiv.appendChild(inputContainer);
+
+    // Append the rowDiv to the main container
+    container.appendChild(rowDiv);
+}
+
+// Update the DispatchConsol button to open the modal instead of directly dispatching
+document.getElementById('DispatchConsol').onclick = function() {
+    openModal('dispatchModal');
+};
+
+
+
+// Function to handle the submission of the dispatch confirmation modal
+function submitDispatch() {
+    const jiffyBagQty = document.getElementById('jiffyBagQty').value;
+    const boxQty = document.getElementById('boxQty').value;
+    const consolidatedBoxDimensions = document.getElementById('consolidatedBoxDimensions').value;
+    const consolidatedBoxWeight = document.getElementById('consolidatedBoxWeight').value;
+
+    // Validate input fields
+    if (jiffyBagQty === "" || boxQty === "" || consolidatedBoxDimensions === "" || consolidatedBoxWeight === "") {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    // Store consolidation information
+    const consolidationInfo = {
+        "Jiffy Bag Quantity": jiffyBagQty,
+        "Box Quantity": boxQty,
+        "Consolidated Box Dimensions": consolidatedBoxDimensions,
+        "Consolidated Box Weight": consolidatedBoxWeight
+    };
+
+    // Proceed with dispatching after validation
+    dispatchConsolidation(consolidationInfo);
+
+    // Close the modal
+    closeModal('dispatchModal');
+}
+
+// Function to dispatch all records that match the selected consolidation
+function dispatchConsolidation(consolidationInfo) {
+    if (!activeConsolidationFilter) {
+        alert("Please select a supplier to dispatch.");
+        return;
+    }
+
+    const dispatchRef = firebase.database().ref('Dispatch Test');
+
+    dispatchRef.once('value', (snapshot) => {
+        let updates = {};
+        let moveData = {}; // Data to move to the new node
+
+        snapshot.forEach((childSnapshot) => {
+            const record = childSnapshot.val();
+            const consolidationAssignment = record["Consolidation Assignment"];
+
+            if (consolidationAssignment === activeConsolidationFilter) {
+                updates[childSnapshot.key + "/External Status"] = "Dispatched";
+
+                // Prepare data to move
+                moveData[childSnapshot.key] = record;
+            }
+        });
+
+        // Update records in the current node
+        dispatchRef.update(updates)
+            .then(() => {
+                // Move records to the new node
+                moveRecordsToNewNode(moveData, activeConsolidationFilter, consolidationInfo);
+            })
+            .catch(error => {
+                console.error('Error dispatching records:', error);
+                alert('Failed to dispatch records. Please try again.');
+            });
+    });
+}
+
+// Function to move records to a new node in Firebase
+function moveRecordsToNewNode(records, consolidationAssignment, consolidationInfo) {
+    const today = new Date();
+    const dateOfSubmission = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const uniqueID = firebase.database().ref().push().key; // Generate a unique ID for the parent node
+    const parentNodeName = `${dateOfSubmission} - ${uniqueID}`;
+    const newNodeName = "Consolidation - Dispatched Records";
+    const newParentRef = firebase.database().ref(`${newNodeName}/${parentNodeName}`);
+
+    let movePromises = [];
+
+    // Prepare data structure
+    const salesOrdersData = {};
+    Object.keys(records).forEach(recordKey => {
+        const salesOrder = records[recordKey]["Sales Order"];
+        salesOrdersData[salesOrder] = records[recordKey];
+
+        // Remove the record from the original node after moving
+        movePromises.push(firebase.database().ref(`Dispatch Test/${recordKey}`).remove());
+    });
+
+    // Consolidate all data under the parent node
+    const consolidatedData = {
+        "Consolidation Information": consolidationInfo,
+        "Sales Orders": salesOrdersData
+    };
+
+    // Set consolidated data to new parent node
+    movePromises.push(newParentRef.set(consolidatedData));
+
+    // Execute all move and remove operations
+    Promise.all(movePromises)
+        .then(() => {
+            alert(`All records for ${consolidationAssignment} have been dispatched and moved successfully.`);
+            fetchRecords(function () {
+                switchTab('Dispatched');
+            });
+        })
+        .catch(error => {
+            console.error('Error moving records:', error);
+            alert('Failed to move records. Please try again.');
+        });
+}
+
+
+    
+    </script>
+
+</html>
+
